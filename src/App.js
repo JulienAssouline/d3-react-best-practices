@@ -52,7 +52,6 @@ function App() {
         <Text>By: Julien Assouline</Text>
         <Text>Currently, I'm a developer for the Toronto Blue Jays</Text>
         <Text>Previously, interened at Flourish & CBC </Text>
-        <Text>I ❤️ React and D3</Text>
       </Slide>
       <Slide id="1">
         <div>
