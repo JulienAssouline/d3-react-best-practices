@@ -427,11 +427,9 @@ function App() {
       </Slide>
       <Slide id="13">
         <Heading>Animations</Heading>
-        <Text>
-          You're in React land... think of solutions with the React ecosystem
-        </Text>
         <Text>Framer Motion</Text>
         <Text>React Spring</Text>
+        <Text>D3 transitions (best as last resort imo)</Text>
       </Slide>
       <Slide id="14">
         <Heading>So when should I use D3?</Heading>
