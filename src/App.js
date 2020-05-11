@@ -1,5 +1,18 @@
 import React from "react";
-import { Deck, Slide, Heading, Text, Quote, CodePane, Image } from "spectacle";
+import {
+  Deck,
+  Slide,
+  Heading,
+  Text,
+  Quote,
+  CodePane,
+  Image,
+  Link,
+  Progress,
+  FlexBox,
+  Box,
+  FullScreen,
+} from "spectacle";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 
 import contourImage from "./images/contourImage.png";
@@ -13,16 +26,28 @@ import recharts from "./images/recharts.png";
 import victoryjs from "./images/victoryjs.png";
 import nivo from "./images/nivo.png";
 import vx from "./images/vx.png";
-import duotoneDark from "prism-react-renderer/themes/nightOwlLight";
+import duotoneDark from "prism-react-renderer/themes/nightOwl";
+
+const template = () => (
+  <FlexBox margin={10} position="absolute" bottom={0} width={1}>
+    <Box marginRight="auto">
+      <FullScreen />
+    </Box>
+    <Box marginRight="auto">
+      <Progress />
+    </Box>
+  </FlexBox>
+);
 
 function App() {
   return (
-    <Deck progress="pacman" transitionEffect="slide">
+    <Deck transition={["slide"]} template={template}>
       <Slide id="1">
         <Heading>D3 + React Best Practices</Heading>
         <Text>By: Julien Assouline</Text>
         <Text>Currently, I'm a developer for the Toronto Blue Jays</Text>
-        <Text>I Like React and ❤️ D3</Text>
+        <Text>Previously, interened at Flourish & CBC </Text>
+        <Text>I ❤️ React and D3</Text>
       </Slide>
       <Slide id="1">
         <div>
@@ -142,139 +167,138 @@ function App() {
       </Slide>
       <Slide id="10">
         <Heading>What that looks like</Heading>
+
         <CodePane
           autoFillHeight={true}
           language="javascript"
           theme={duotoneDark}
         >
           {`
- import React, { useMemo } from "react";
- import { line, area } from "d3-shape";
- import { extent } from "d3-array";
- import { scaleLinear, scaleTime } from "d3-scale";
- import { timeParse } from "d3-time-format";
- import AxisLeft from "./AxisLeft";
- import AxisBottom from "./AxisBottom";
- import LinearGradient from "./LinearGradient";
- import Tooltip from "./Tooltip";
- 
- import { statesLabels } from "./utils/helpers";
- 
- function SmallMultipleContainer({ data }) {
-   const w = 500,
-     h = 260;
- 
-   const margin = {
-     top: 40,
-     left: 40,
-     right: 40,
-     bottom: 40,
-   };
- 
-   const width = w - margin.right - margin.left,
-     height = h - margin.top - margin.bottom;
- 
-   const parseTime = timeParse("%Y-%m-%d");
- 
-   function sortByState(a, b) {
-     if (a.i < b.i) {
-       return -1;
-     }
-     if (a.i > b.i) {
-       return 1;
-     }
-     return 0;
-   }
- 
-   useMemo(() => data.sort(sortByState), [data]);
- 
-   const xScale = scaleTime()
-     .domain([
-       new Date("March 02 2020"),
-       extent(data[0]["r0"], (el) => parseTime(el.d))[1],
-     ])
-     .range([0, width - 5]);
- 
-   const yScale = scaleLinear().domain([0, 4.5]).range([height, 0]);
- 
-   const path = useMemo(
-     () =>
-       line()
-         .x((el) => {
-           return xScale(parseTime(el.d));
-         })
-         .y((el) => yScale(el.c["r0"])),
-     [parseTime, xScale, yScale]
-   );
- 
-   const pathArea = useMemo(
-     () =>
-       area()
-         .x((el) => xScale(parseTime(el.d)))
-         .y0((d) => yScale(d.c["l90"]))
-         .y1((d) => yScale(d.c["h90"])),
-     [parseTime, xScale, yScale]
-   );
- 
-   const lineCharts = data.map((d, i) => (
-     <svg id="tooltip" key={i} width={w} height={h}>
-       <g transform={"translate(margin.left,"+"margin.top)"}>
-         <text style={{ fontWeight: "bold" }} x={0} y={-20}>
-           {statesLabels[i]}
-         </text>
-         <text x={width - 30} y={-20}>
-           {d["r0"][d["r0"].length - 1].c["r0"].toFixed(2)}
-         </text>
-         <AxisLeft yScale={yScale} width={width} count={5} />
-         <AxisBottom xScale={xScale} height={height} />
-         <LinearGradient state={d.i} height={height} yScale={yScale} />
-         <path
-           d={pathArea(d["r0"])}
-           style={{
-             fill: "url(#states-"+"d.i)",
-             stroke: "url(#states-"+"d.i)",
-             strokeWidth: 3,
-             opacity: 0.08,
-           }}
-         />
-         <path
-           d={path(d["r0"])}
-           style={{
-             fill: "none",
-             stroke: "url(#states" + "-d.i)",
-             strokeWidth: 1.5,
-           }}
-         />
-         <Tooltip
-           width={width}
-           height={height}
-           xScale={xScale}
-           data={d["r0"]}
-           parseTime={parseTime}
-         />
-         <rect
-           x={0}
-           y={0}
-           width={width}
-           height={height}
-           style={{ opacity: 1, fill: "none", stroke: "#eee" }}
-         />
-       </g>
-     </svg>
-   ));
- 
-   return <div>{lineCharts}</div>;
- }
- 
- export default SmallMultipleContainer;
- 
-            
+          import React, { useMemo } from "react";
+          import { line, area } from "d3-shape";
+          import { extent } from "d3-array";
+          import { scaleLinear, scaleTime } from "d3-scale";
+          import { timeParse } from "d3-time-format";
+          import AxisLeft from "./AxisLeft";
+          import AxisBottom from "./AxisBottom";
+          import LinearGradient from "./LinearGradient";
+          import Tooltip from "./Tooltip";
+          
+          import { statesLabels } from "./utils/helpers";
+          
+          function SmallMultipleContainer({ data }) {
+            const w = 500,
+              h = 260;
+          
+            const margin = {
+              top: 40,
+              left: 40,
+              right: 40,
+              bottom: 40,
+            };
+          
+            const width = w - margin.right - margin.left,
+              height = h - margin.top - margin.bottom;
+          
+            const parseTime = timeParse("%Y-%m-%d");
+          
+            function sortByState(a, b) {
+              if (a.i < b.i) {
+                return -1;
+              }
+              if (a.i > b.i) {
+                return 1;
+              }
+              return 0;
+            }
+          
+            useMemo(() => data.sort(sortByState), [data]);
+          
+            const xScale = scaleTime()
+              .domain([
+                new Date("March 02 2020"),
+                extent(data[0]["r0"], (el) => parseTime(el.d))[1],
+              ])
+              .range([0, width - 5]);
+          
+            const yScale = scaleLinear().domain([0, 4.5]).range([height, 0]);
+          
+            const path = useMemo(
+              () =>
+                line()
+                  .x((el) => {
+                    return xScale(parseTime(el.d));
+                  })
+                  .y((el) => yScale(el.c["r0"])),
+              [parseTime, xScale, yScale]
+            );
+          
+            const pathArea = useMemo(
+              () =>
+                area()
+                  .x((el) => xScale(parseTime(el.d)))
+                  .y0((d) => yScale(d.c["l90"]))
+                  .y1((d) => yScale(d.c["h90"])),
+              [parseTime, xScale, yScale]
+            );
+          
+            const lineCharts = data.map((d, i) => (
+              <svg id="tooltip" key={i} width={w} height={h}>
+                <g transform={"translate(margin.left,"+"margin.top)"}>
+                  <text style={{ fontWeight: "bold" }} x={0} y={-20}>
+                    {statesLabels[i]}
+                  </text>
+                  <text x={width - 30} y={-20}>
+                    {d["r0"][d["r0"].length - 1].c["r0"].toFixed(2)}
+                  </text>
+                  <AxisLeft yScale={yScale} width={width} count={5} />
+                  <AxisBottom xScale={xScale} height={height} />
+                  <LinearGradient state={d.i} height={height} yScale={yScale} />
+                  <path
+                    d={pathArea(d["r0"])}
+                    style={{
+                      fill: "url(#states-"+"d.i)",
+                      stroke: "url(#states-"+"d.i)",
+                      strokeWidth: 3,
+                      opacity: 0.08,
+                    }}
+                  />
+                  <path
+                    d={path(d["r0"])}
+                    style={{
+                      fill: "none",
+                      stroke: "url(#states" + "-d.i)",
+                      strokeWidth: 1.5,
+                    }}
+                  />
+                  <Tooltip
+                    width={width}
+                    height={height}
+                    xScale={xScale}
+                    data={d["r0"]}
+                    parseTime={parseTime}
+                  />
+                  <rect
+                    x={0}
+                    y={0}
+                    width={width}
+                    height={height}
+                    style={{ opacity: 1, fill: "none", stroke: "#eee" }}
+                  />
+                </g>
+              </svg>
+            ));
+          
+            return <div>{lineCharts}</div>;
+          }
+          
+          export default SmallMultipleContainer;
           `}
         </CodePane>
       </Slide>
       <Slide id="12">
         <Heading>Be careful/mindful of your imports</Heading>
-        <Text>Never import all of D3! (import * as d3 from D3)</Text>
+        <Text>Never import all of D3! (import * as d3 from d3)</Text>
         <CodePane
           autoFillHeight={true}
           language="javascript"
@@ -307,9 +331,35 @@ function App() {
           <Image src={vx} alt="contourImage" />
         </div>
       </Slide>
+      <Slide id="14">
+        <Heading>Resources</Heading>
+        <Text>
+          D3 Slack Channel: <Link>https://d3-slackin.herokuapp.com/</Link>
+        </Text>
+        <Text>
+          Observable: <Link>https://observablehq.com/@d3/gallery</Link>
+        </Text>
+        <Text>
+          bl.ocks: <Link>https://blockbuilder.org/search</Link>
+        </Text>
+        <Text>
+          Book:
+          <Link>
+            https://www.amazon.ca/Interactive-Data-Visualization-Web-Introduction/dp/1491921285/ref=dp_ob_title_bk
+          </Link>
+        </Text>
+      </Slide>
       <Slide id="15">
         <Heading>Thank you ❤️ </Heading>
+        <br />
+        <br />
+        <Text>@JulienAssouline on Twitter</Text>
+        <Text>JulienAssouline on GitHub</Text>
+        <br />
+        <Link>https://github.com/JulienAssouline/rt-covid-remak</Link>
+        <Link>https://github.com/JulienAssouline/d3-react-best-practices</Link>
       </Slide>
+      <Progress></Progress>
     </Deck>
   );
 }
