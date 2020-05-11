@@ -12,6 +12,7 @@ import {
   FlexBox,
   Box,
   FullScreen,
+  Appear,
 } from "spectacle";
 import { TwitterTweetEmbed } from "react-twitter-embed";
 
@@ -26,6 +27,8 @@ import recharts from "./images/recharts.png";
 import victoryjs from "./images/victoryjs.png";
 import nivo from "./images/nivo.png";
 import vx from "./images/vx.png";
+import Axis from "./images/Axis.png";
+
 import duotoneDark from "prism-react-renderer/themes/nightOwl";
 
 const template = () => (
@@ -79,11 +82,7 @@ function App() {
       </Slide>
       <Slide id="4">
         <Heading>Okay... so how does that work with React?</Heading>
-        <CodePane
-          autoFillHeight={true}
-          language="javascript"
-          theme={duotoneDark}
-        >
+        <CodePane autoFillHeight={true} language="jsx" theme={duotoneDark}>
           {`
             function RandomData() {
               const data = [...Array(100)].map((e, i) => {
@@ -157,36 +156,16 @@ function App() {
         <TwitterTweetEmbed tweetId={"1251854168584867840"} />
         <blockquote class="twitter-tweet"></blockquote>
       </Slide>
-      <Slide id="8">
-        <Heading>We can make this better... it's not Reacts fault</Heading>
-      </Slide>
       <Slide id="9">
-        <Heading>What was the the difference?</Heading>
+        <Heading>The Better Way</Heading>
         <Text>React renders</Text>
         <Text>D3 does the math</Text>
       </Slide>
       <Slide id="10">
-        <Heading>What that looks like</Heading>
+        <Heading>The D3/JS code</Heading>
 
-        <CodePane
-          autoFillHeight={true}
-          language="javascript"
-          theme={duotoneDark}
-        >
+        <CodePane autoFillHeight={true} language="jsx" theme={duotoneDark}>
           {`
-          import React, { useMemo } from "react";
-          import { line, area } from "d3-shape";
-          import { extent } from "d3-array";
-          import { scaleLinear, scaleTime } from "d3-scale";
-          import { timeParse } from "d3-time-format";
-          import AxisLeft from "./AxisLeft";
-          import AxisBottom from "./AxisBottom";
-          import LinearGradient from "./LinearGradient";
-          import Tooltip from "./Tooltip";
-          
-          import { statesLabels } from "./utils/helpers";
-          
-          function SmallMultipleContainer({ data }) {
             const w = 500,
               h = 260;
           
@@ -201,18 +180,6 @@ function App() {
               height = h - margin.top - margin.bottom;
           
             const parseTime = timeParse("%Y-%m-%d");
-          
-            function sortByState(a, b) {
-              if (a.i < b.i) {
-                return -1;
-              }
-              if (a.i > b.i) {
-                return 1;
-              }
-              return 0;
-            }
-          
-            useMemo(() => data.sort(sortByState), [data]);
           
             const xScale = scaleTime()
               .domain([
@@ -241,19 +208,31 @@ function App() {
                   .y1((d) => yScale(d.c["h90"])),
               [parseTime, xScale, yScale]
             );
+
           
+          `}
+        </CodePane>
+      </Slide>
+      <Slide id="10">
+        <Heading>React Rendering</Heading>
+        <CodePane autoFillHeight={true} language="jsx" theme={duotoneDark}>
+          {`
             const lineCharts = data.map((d, i) => (
               <svg id="tooltip" key={i} width={w} height={h}>
                 <g transform={"translate(margin.left,"+"margin.top)"}>
+
                   <text style={{ fontWeight: "bold" }} x={0} y={-20}>
                     {statesLabels[i]}
                   </text>
                   <text x={width - 30} y={-20}>
                     {d["r0"][d["r0"].length - 1].c["r0"].toFixed(2)}
                   </text>
+
                   <AxisLeft yScale={yScale} width={width} count={5} />
                   <AxisBottom xScale={xScale} height={height} />
+
                   <LinearGradient state={d.i} height={height} yScale={yScale} />
+
                   <path
                     d={pathArea(d["r0"])}
                     style={{
@@ -271,6 +250,7 @@ function App() {
                       strokeWidth: 1.5,
                     }}
                   />
+
                   <Tooltip
                     width={width}
                     height={height}
@@ -278,6 +258,7 @@ function App() {
                     data={d["r0"]}
                     parseTime={parseTime}
                   />
+
                   <rect
                     x={0}
                     y={0}
@@ -291,28 +272,149 @@ function App() {
           
             return <div>{lineCharts}</div>;
           }
-          
-          export default SmallMultipleContainer;
+          `}
+        </CodePane>
+      </Slide>
+      <Slide id="12">
+        <Heading>Component Composition is your friend</Heading>
+
+        <CodePane autoFillHeight={true} language="jsx" theme={duotoneDark}>
+          {`
+ const lineCharts = data.map((d, i) => (
+  <LineChart w={w} h={h} margin={margin}>
+
+            <Text
+                  textLabel={statesLabels[i]}
+                  x={0}
+                  y={-20}
+                  styles={{ fontWeight: "bold" }}
+            />
+            <Text
+                  textLabel={d["r0"][d["r0"].length - 1].c["r0"].toFixed(2)}
+                  x={width - 30}
+                  y={-20}
+                  styles={{ fontWeight: "bold" }}
+            />
+
+            <AxisLeft yScale={yScale} width={width} count={5} />
+            <AxisBottom xScale={xScale} height={height} />
+
+            <LinearGradient state={d.i} height={height} yScale={yScale} />
+
+            <Path
+                  pathFun={pathArea(d["r0"])}
+                  styles={{
+                    fill: url(#states-d.i),
+                    stroke: url(#states-d.i),
+                    strokeWidth: 3,
+                    opacity: 0.08,
+                  }}
+            />
+            <Path
+                  pathFun={path(d["r0"])}
+                  styles={{
+                    fill: "none",
+                    stroke: url(#states-d.i),
+                    strokeWidth: 1.5,
+                  }}
+            />
+
+            <Tooltip
+                  width={width}
+                  height={height}
+                  xScale={xScale}
+                  data={d["r0"]}
+                  parseTime={parseTime}
+            />
+
+            <Rect
+                  x={0}
+                  y={0}
+                  width={width}
+                  height={height}
+                  styles={{ opacity: 1, fill: "none", stroke: "#eee" }}
+            />
+  </LineChart>
+));
+            
           `}
         </CodePane>
       </Slide>
       <Slide id="12">
         <Heading>Be careful/mindful of your imports</Heading>
         <Text>Never import all of D3! (import * as d3 from d3)</Text>
-        <CodePane
-          autoFillHeight={true}
-          language="javascript"
-          theme={duotoneDark}
-        >
+        <CodePane language="jsx" theme={duotoneDark}>
           {`
- import React, { useMemo } from "react";
- import { line, area } from "d3-shape";
- import { extent } from "d3-array";
- import { scaleLinear, scaleTime } from "d3-scale";
- import { timeParse } from "d3-time-format"; 
+              import React, { useMemo } from "react";
+              import { line, area } from "d3-shape";
+              import { extent } from "d3-array";
+              import { scaleLinear, scaleTime } from "d3-scale";
+              import { timeParse } from "d3-time-format"; 
             
           `}
         </CodePane>
+      </Slide>
+      <Slide id="13">
+        <Heading>Axes</Heading>
+        <Appear
+          elementNum={0}
+          transitionEffect={{ to: { opacity: 0 }, from: { opacity: 1 } }}
+        >
+          <CodePane autoFillHeight={true} language="jsx" theme={duotoneDark}>
+            {`
+        function AxisLeft({ yScale, width, count }) {
+
+          const textPadding = -20;
+        
+          const axis = yScale.ticks(count).map((d, i) => (
+
+            <g key={i} className="y-tick">
+
+            <line
+              style={{
+                stroke: "lightgrey",
+                opacity: 0.5
+              }}
+              y1={yScale(d)}
+              y2={yScale(d)}
+              x1={0}
+              x2={width}
+            />
+
+              <text
+                style={{ fontSize: 12, fill: "#c5c5c5" }}
+                x={textPadding}
+                dy=".32em"
+                y={yScale(d)}
+              >
+                {d}
+              </text>
+              
+            </g>
+
+          ));
+          return <>{axis}</>;
+        }
+             
+          `}
+          </CodePane>
+        </Appear>
+        <Appear
+          elementNum={1}
+          transitionEffect={{ to: { opacity: 1 }, from: { opacity: 0 } }}
+        >
+          <Image
+            style={{
+              position: "absolute",
+              bottom: 100,
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+            src={Axis}
+            alt={"Axis"}
+          />
+        </Appear>
       </Slide>
       <Slide id="13">
         <Heading>Animations</Heading>
