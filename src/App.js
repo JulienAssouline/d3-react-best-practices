@@ -28,6 +28,8 @@ import victoryjs from "./images/victoryjs.png";
 import nivo from "./images/nivo.png";
 import vx from "./images/vx.png";
 import Axis from "./images/Axis.png";
+import rtlive from "./images/rtlive.png";
+import lineCharts from "./images/lineChart.png";
 
 import duotoneDark from "prism-react-renderer/themes/nightOwl";
 
@@ -149,12 +151,17 @@ function App() {
         <Heading>Why is this bad?</Heading>
         <Text>The code is less readable</Text>
         <Text>It's less reusable</Text>
-        <Text>And it can lead to performance issues</Text>
+        <Text>It can lead to performance issues</Text>
+        <Text>And it can't work in React Native</Text>
       </Slide>
       <Slide id="7">
         <Heading>Let's look at an example</Heading>
-        <TwitterTweetEmbed tweetId={"1251854168584867840"} />
-        <blockquote class="twitter-tweet"></blockquote>
+
+        <FlexBox>
+          <TwitterTweetEmbed tweetId={"1251854168584867840"} />
+          <blockquote class="twitter-tweet"></blockquote>
+          <Image src={rtlive} width={500} height={300} />
+        </FlexBox>
       </Slide>
       <Slide id="9">
         <Heading>The Better Way</Heading>
@@ -276,7 +283,7 @@ function App() {
         </CodePane>
       </Slide>
       <Slide id="12">
-        <Heading>Component Composition is your friend</Heading>
+        <Heading>Reusable Pattern</Heading>
 
         <CodePane autoFillHeight={true} language="jsx" theme={duotoneDark}>
           {`
@@ -339,6 +346,9 @@ function App() {
             
           `}
         </CodePane>
+      </Slide>
+      <Slide id="12">
+        <Image src={lineCharts} width={1300} height={600} alt={"lineCharts"} />
       </Slide>
       <Slide id="12">
         <Heading>Be careful/mindful of your imports</Heading>
